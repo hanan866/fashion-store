@@ -1,63 +1,51 @@
-import { Heart } from 'lucide-react'
+"use client"
+
+import { useRef } from "react"
 
 export default function ProductCard({
   product,
   onAddToCart,
-  onToggleWishlist,
-  isWishlisted
+  onToggleWishlist
 }) {
+  const clickCount = useRef(0)
+  const clickTimer = useRef(null)
+
+  const handleImageClick = () => {
+    clickCount.current += 1
+
+    if (clickTimer.current) {
+      clearTimeout(clickTimer.current)
+    }
+
+    clickTimer.current = setTimeout(() => {
+      if (clickCount.current === 1) {
+        onAddToCart(product)
+      }
+
+      if (clickCount.current === 2) {
+        onToggleWishlist(product)
+      }
+
+      clickCount.current = 0
+      clickTimer.current = null
+    }, 300)
+  }
+
   return (
-    <div className="group bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
-
-      {/* 🖼️ IMAGE */}
-      <div className="relative cursor-pointer">
-
+    <div className="group cursor-pointer">
+      <div className="overflow-hidden rounded-xl">
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-64 object-cover"
+          onClick={handleImageClick}
+          className="w-full h-80 object-cover transition-transform duration-300 group-hover:scale-105"
         />
-
-        {/* 🔥 HOVER OVERLAY */}
-        <div
-          onClick={() => onAddToCart(product)}
-          className="absolute inset-0 bg-black/50 flex items-center justify-center 
-                     opacity-0 group-hover:opacity-100 transition cursor-pointer"
-        >
-          <span className="text-white text-lg font-semibold">
-            Add to Cart
-          </span>
-        </div>
-
-        {/* ❤️ Wishlist */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            onToggleWishlist(product)
-          }}
-          className="absolute top-3 right-3 p-2 bg-white rounded-full shadow"
-        >
-          <Heart
-            className={`w-4 h-4 ${
-              isWishlisted ? 'text-red-500 fill-red-500' : 'text-gray-600'
-            }`}
-          />
-        </button>
       </div>
 
-      {/* 📄 INFO */}
-      <div className="p-4">
-        <h3 className="font-semibold text-gray-900 dark:text-white">
-          {product.name}
-        </h3>
-
-        <p className="text-gray-500 dark:text-gray-400 text-sm">
-          {product.category}
-        </p>
-
-        <p className="mt-2 font-bold text-gray-900 dark:text-white">
-          ${product.price}
-        </p>
+      <div className="mt-3">
+        <h3 className="font-semibold text-lg">{product.name}</h3>
+        <p className="text-gray-500">{product.category}</p>
+        <p className="font-bold">${product.price}</p>
       </div>
     </div>
   )
