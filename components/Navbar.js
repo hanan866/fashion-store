@@ -85,6 +85,9 @@ export default function Navbar({ cartCount, wishlistCount, darkMode, toggleDarkM
                   </span>
                 )}
               </Link>
+              <Link href="/cart">
+                Cart ({cartCount})
+              </Link>
 
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

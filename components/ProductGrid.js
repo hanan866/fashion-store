@@ -19,11 +19,13 @@ export default function ProductGrid({
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
       {products.map((product) => (
         <ProductCard
-          key={product.id}
+          key={product._id || product.id}
           product={product}
           onAddToCart={onAddToCart}
           onToggleWishlist={onToggleWishlist}
-          isWishlisted={wishlist.some(item => item.id === product.id)}
+         isWishlisted={wishlist.some(
+  item => (item._id || item.id) === (product._id || product.id)
+)}
         />
       ))}
     </div>

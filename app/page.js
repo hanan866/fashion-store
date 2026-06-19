@@ -11,6 +11,7 @@ export default function Home() {
   const [cart, setCart] = useState([])
   const [wishlist, setWishlist] = useState([])
   const [darkMode, setDarkMode] = useState(false)
+  const [products, setProducts] = useState([])
 
   // 🔁 Load from localStorage (no loading screen)
   useEffect(() => {
@@ -22,6 +23,21 @@ export default function Home() {
     if (savedWishlist) setWishlist(JSON.parse(savedWishlist))
     if (savedDarkMode) setDarkMode(JSON.parse(savedDarkMode))
   }, [])
+
+
+  useEffect(() => {
+  const fetchProducts = async () => {
+    try {
+      const res = await fetch('/api/products')
+      const data = await res.json()
+      setProducts(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  fetchProducts()
+}, [])
 
   // 💾 Save + apply dark mode
   useEffect(() => {
@@ -37,25 +53,35 @@ export default function Home() {
   }, [cart, wishlist, darkMode])
 
   // 🛒 FIXED cart logic (no duplicates)
-  const addToCart = (product) => {
-    const existing = cart.find(item => item.id === product.id)
+ const addToCart = (product) => {
+  const existingCart = JSON.parse(localStorage.getItem("cart")) || []
 
-    if (existing) {
-      const updatedCart = cart.map(item =>
-        item.id === product.id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      )
-      setCart(updatedCart)
-    } else {
-      setCart([...cart, { ...product, quantity: 1 }])
-    }
+  const id = product._id || product.id
+
+  const existing = existingCart.find(
+    item => (item._id || item.id) === id
+  )
+
+  let updatedCart
+
+  if (existing) {
+    updatedCart = existingCart.map(item =>
+      (item._id || item.id) === id
+        ? { ...item, quantity: item.quantity + 1 }
+        : item
+    )
+  } else {
+    updatedCart = [...existingCart, { ...product, quantity: 1 }]
   }
+
+  localStorage.setItem("cart", JSON.stringify(updatedCart))
+  setCart(updatedCart)
+}
 
   // ❤️ wishlist toggle
   const toggleWishlist = (product) => {
     if (wishlist.some(item => item.id === product.id)) {
-      setWishlist(wishlist.filter(item => item.id !== product.id))
+      setWishlist(wishlist.some(item => (item._id || item.id) === (product._id || product.id)))
     } else {
       setWishlist([...wishlist, product])
     }
@@ -65,40 +91,7 @@ export default function Home() {
   const toggleDarkMode = () => setDarkMode(!darkMode)
 
   // 📦 Fake products (temporary)
-  const newArrivals = [
-    {
-      id: 1,
-      name: 'Classic Wool Coat',
-      category: 'Outerwear',
-      price: 299,
-      image: 'https://images.unsplash.com/photo-1539533113208-f6df8cc8b543?w=400&h=500&fit=crop',
-      sizes: ['S', 'M', 'L', 'XL'],
-    },
-    {
-      id: 2,
-      name: 'Cashmere Sweater',
-      category: 'Knitwear',
-      price: 189,
-      image: 'https://images.unsplash.com/photo-1576871337632-b9aef4c17ab9?w=400&h=500&fit=crop',
-      sizes: ['S', 'M', 'L'],
-    },
-    {
-      id: 3,
-      name: 'Leather Jacket',
-      category: 'Outerwear',
-      price: 399,
-      image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&h=500&fit=crop',
-      sizes: ['M', 'L', 'XL'],
-    },
-    {
-      id: 4,
-      name: 'Silk Blouse',
-      category: 'Tops',
-      price: 129,
-      image: 'https://images.unsplash.com/photo-1598554747436-c9293d6a588f?w=400&h=500&fit=crop',
-      sizes: ['XS', 'S', 'M', 'L'],
-    },
-  ]
+  const newArrivals = products
 
   const bestSellers = [
     {

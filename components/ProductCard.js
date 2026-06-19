@@ -35,7 +35,7 @@ export default function ProductCard({
     <div className="group cursor-pointer">
       <div className="overflow-hidden rounded-xl">
         <img
-          src={product.image}
+          src={product.image || "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=500&fit=crop"}
           alt={product.name}
           onClick={handleImageClick}
           className="w-full h-80 object-cover transition-transform duration-300 group-hover:scale-105"
