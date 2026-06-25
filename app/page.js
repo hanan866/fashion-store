@@ -80,12 +80,22 @@ export default function Home() {
 
   // ❤️ wishlist toggle
   const toggleWishlist = (product) => {
-    if (wishlist.some(item => item.id === product.id)) {
-      setWishlist(wishlist.some(item => (item._id || item.id) === (product._id || product.id)))
-    } else {
-      setWishlist([...wishlist, product])
-    }
+  const id = product._id || product.id
+
+  if (
+    wishlist.some(
+      item => (item._id || item.id) === id
+    )
+  ) {
+    setWishlist(
+      wishlist.filter(
+        item => (item._id || item.id) !== id
+      )
+    )
+  } else {
+    setWishlist([...wishlist, product])
   }
+}
 
   // 🌙 dark mode
   const toggleDarkMode = () => setDarkMode(!darkMode)
@@ -93,40 +103,8 @@ export default function Home() {
   // 📦 Fake products (temporary)
   const newArrivals = products
 
-  const bestSellers = [
-    {
-      id: 5,
-      name: 'Slim Fit Jeans',
-      category: 'Denim',
-      price: 89,
-      image: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&h=500&fit=crop',
-      sizes: ['28', '30', '32', '34', '36'],
-    },
-    {
-      id: 6,
-      name: 'White T-Shirt',
-      category: 'Basics',
-      price: 29,
-      image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=500&fit=crop',
-      sizes: ['S', 'M', 'L', 'XL'],
-    },
-    {
-      id: 7,
-      name: 'Wool Blazer',
-      category: 'Formal',
-      price: 249,
-      image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&h=500&fit=crop',
-      sizes: ['S', 'M', 'L'],
-    },
-    {
-      id: 8,
-      name: 'Leather Boots',
-      category: 'Footwear',
-      price: 199,
-      image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=500&fit=crop',
-      sizes: ['7', '8', '9', '10', '11'],
-    },
-  ]
+  const bestSellers = products
+  
 
   return (
     <>
